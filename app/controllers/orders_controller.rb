@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
   before_action :set_order, only: %i[ show edit update destroy ]
-
+  skip_before_action :verify_authenticity_token
   def first
     @order = Order.first
     render :show
@@ -18,6 +18,7 @@ class OrdersController < ApplicationController
   # GET /orders or /orders.json
   def index
     @orders = Order.all
+    puts "params: #{params.inspect}"
   end
 
   # GET /orders/1 or /orders/1.json
@@ -35,6 +36,7 @@ class OrdersController < ApplicationController
 
   # POST /orders or /orders.json
   def create
+    # byebug params[:order]
     @order = Order.new(order_params)
 
     respond_to do |format|
