@@ -1,6 +1,16 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  root "orders#calc"
 
-  # Defines the root path route ("/")
-  # root "articles#index"
+  resources :orders
+
+  get "hello/index"
+  
+  resources :orders do
+    member do
+      get "approve"
+    end
+  end
+  resources :orders do
+    get "last", on: :collection
+  end
 end
