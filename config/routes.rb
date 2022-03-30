@@ -13,4 +13,6 @@ Rails.application.routes.draw do
   resources :orders do
     get "last", on: :collection
   end
+  resource :login, only: [:show, :create, :destroy]
+ 
 end
