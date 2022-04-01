@@ -18,6 +18,8 @@ class OrdersController < ApplicationController
   # GET /orders or /orders.json
   def index
     @orders = Order.all
+    @users = User.all
+    @users.first
     puts "params: #{params.inspect}"
   end
 
