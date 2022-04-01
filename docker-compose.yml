@@ -1,0 +1,14 @@
+version: "3"
+services:
+  app:
+    build: .
+    # image: ruby:3.0
+    command: rails server -b 0.0.0.0
+    volumes:
+      - .:/usr/src
+    # depends_on:
+    #   - sqlite3
+    ports:
+      - 3000:3000
+  # sqlite3:
+  #   image: sqlite3:latest
