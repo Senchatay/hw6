@@ -1,5 +1,5 @@
 class LoginsController < ApplicationController
-    # skip_before_action :check_aut
+    skip_before_action :check_aut
   def show
   end
 

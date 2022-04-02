@@ -1,6 +1,11 @@
 class OrdersController < ApplicationController
   before_action :set_order, only: %i[ show edit update destroy ]
   skip_before_action :verify_authenticity_token
+
+  def check cpu, ram, hdd_type, hdd_capacity, os
+
+  end
+
   def first
     @order = Order.first
     render :show
