@@ -19,7 +19,7 @@ class LoginService
 
   def modify_session
     session[:login] = params[:login]
-    session[:balance] = 1000 unless session[:balance]
+    session[:balance] = 1000 #unless session[:balance]
     t = Time.now.hour
     session[:time] = t
   end

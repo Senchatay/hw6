@@ -15,5 +15,6 @@ Rails.application.routes.draw do
     get "last", on: :collection
   end
   resource :login, only: [:show, :create, :destroy]
- 
+  get "new_vm", to: "orders#check"
+
 end
