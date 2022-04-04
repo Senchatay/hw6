@@ -3,7 +3,7 @@ class OrdersController < ApplicationController
   skip_before_action :verify_authenticity_token
   skip_before_action :check_aut, only: %i[check]
 
-  def check #(cpu, ram, hdd_type, hdd_capacity, os)
+  def check #(cpu=nil, ram=nil, hdd_type=nil, hdd_capacity=nil, os=nil)
     unless session[:login]
       render status: 401
       # redirect_to login_path
