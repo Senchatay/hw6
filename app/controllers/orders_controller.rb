@@ -4,63 +4,7 @@ class OrdersController < ApplicationController
   skip_before_action :check_aut, only: %i[check]
 
   def check #(cpu=nil, ram=nil, hdd_type=nil, hdd_capacity=nil, os=nil)
-    unless session[:login]
-      render status: 401
-      # redirect_to login_path
-      return
-    end
-    require "json"
-    require "net/http"
-
-    uri_orders = URI("http://possible_orders.srv.w55.ru/")
-    res = Net::HTTP.get_response(uri_orders)
-    unless res.code == "200"
-      render status: 503 
-      return
-    end
-    
-    hash = JSON.parse(res.body)
-    current_vm = { "os" => params[:os], "cpu" => params[:cpu].to_i, "ram" => params[:ram].to_i, "hdd_type" => params[:hdd_type], "hdd_capacity" => params[:hdd_capacity].to_i }
-    
-    finded = false
-    x = hash["specs"].find { |virtual_machine| #Если в списке ВМ внешнего сервиса найдется такая ВМ, что
-      virtual_machine.select { |key, value| #Значения полей этой ВМ будут совпадать с значениями таких же полей current_vm
-        value.find { |x|
-          (x == current_vm[key]) || (x.kind_of?(Array) && x[0] == current_vm["hdd_type"] && current_vm[key] > x[1]["from"] && current_vm[key] < x[1]["to"]) #Либо обычные поля хэша, либо hdd_capacity, который в find приходит массивом вида ["sata",{"from"=>20,"to"=>100}]
-        }
-      }.length == 5 #Совпасть должны все поля
-    }
-    finded = true if x
-    
-    str = "http://hw4:5678/cost?"
-    current_vm.each { |k, v| str += "#{k}=#{v}&" }
-    uri_calc = URI(str.chop!)
-    cost = Net::HTTP.get_response(uri_calc)
-    unless cost.code == "200"
-      render status: 503 
-      return
-    end
-    cost = cost.body.to_f
-    balance_enough = true if session[:balance] >= cost
-
-    if finded && balance_enough
-      balance_before = session[:balance]
-      session[:balance] -= cost
-
-      @output = { "result" => true, "total" => cost, "balance" => balance_before, "balance_after_transaction" => session[:balance] }.to_json
-
-      # render json: @output
-      render status: 200
-      return @output
-      # elsif finded
-      #   error = "Недостаточно средств."
-      # elsif balance_enough
-      #   error = "Не найдено подходящих Виртуальных Машин."
-    else
-      @output = { "result" => false, "error" => "Используется некорректная конфигурация ВМ или недостаточно средств" }.to_json
-      render status: 406
-      return @output
-    end
+    OrderService.new(params, session).call
   end
 
   def first
