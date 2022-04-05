@@ -4,7 +4,17 @@ class OrdersController < ApplicationController
   skip_before_action :check_aut, only: %i[check]
 
   def check #(cpu=nil, ram=nil, hdd_type=nil, hdd_capacity=nil, os=nil)
-    OrderService.new(params, session).call
+    output = OrderService.new(params, session).call
+
+    # Не получилось вызвать render из order_service.rb
+
+    if output.kind_of?(String) # Если в call была ошибка, то вернулась строка с кодом ошибки последним словом
+      render json: output, status: output.split(" ")[-1].to_i
+    elsif output["total"] == nil  # Если все-таки вернулся хэш, проверим проинициализировано ли поле total
+      render json: output, status: 406
+    else
+      render json: output, status: 200
+    end
   end
 
   def first
