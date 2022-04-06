@@ -3,11 +3,14 @@ services:
   app:
     build: .
     # image: ruby:3.0
+    # command: bundle
     command: rails server -b 0.0.0.0
     volumes:
       - .:/usr/src
     # depends_on:
     #   - sqlite3
+    # env_file:
+    #   - .env
     ports:
       - 3000:3000
   # sqlite3:

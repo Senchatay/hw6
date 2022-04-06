@@ -3,18 +3,26 @@ class OrdersController < ApplicationController
   skip_before_action :verify_authenticity_token
   skip_before_action :check_aut, only: %i[check]
 
-  def check #(cpu=nil, ram=nil, hdd_type=nil, hdd_capacity=nil, os=nil)
-    output = OrderService.new(params, session).call
-
-    # Не получилось вызвать render из order_service.rb
-
-    if output.kind_of?(String) # Если в call была ошибка, то вернулась строка с кодом ошибки последним словом
-      render json: output, status: output.split(" ")[-1].to_i
-    elsif output["total"] == nil  # Если все-таки вернулся хэш, проверим проинициализировано ли поле total
-      render json: output, status: 406
+  def check
+    output = { "result" => false }
+    if valid_401?
+      output = OrderService.new(params, session).call
     else
-      render json: output, status: 200
+      output.merge!({ "status" => 401 })
     end
+
+    render json: output.except("status"), status: output["status"]
+
+    # case output["status"]
+    # when 200
+    #   render json: output.except("status"), status: 200
+    # when 401
+    #   render json: output.except("status"), status: 401
+    # when 406
+    #   render json: output.except("status"), status: 406
+    # when 503
+    #   render json: output.except("status"), status: 503
+    # end
   end
 
   def first
@@ -101,5 +109,10 @@ class OrdersController < ApplicationController
   # Only allow a list of trusted parameters through.
   def order_params
     params.require(:order).permit(:name, :status, :cost)
+  end
+
+  def valid_401?
+    return false unless session[:login] #render(status: 401) &&
+    true
   end
 end
