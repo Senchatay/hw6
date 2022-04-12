@@ -17,6 +17,6 @@ services:
   #   image: sqlite3:latest
   hw4:
     image: hw4
-    command: ruby lib/reports.rb
+    command: ruby lib/web/server.rb
     ports:
       - 5678:5678
