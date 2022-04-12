@@ -1,6 +1,6 @@
 version: "3"
 services:
-  app:
+  hw6:
     build: .
     # image: ruby:3.0
     # command: bundle
